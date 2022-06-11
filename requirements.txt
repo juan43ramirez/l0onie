@@ -1,0 +1,26 @@
+imageio==2.19.2
+matplotlib
+numpy
+pandas
+scipy
+seaborn
+
+git+https://github.com/cooper-org/cooper.git@dev
+
+black==22.3
+flake8==4.0.1
+isort==5.10.1
+pytest==7.1.2
+pytest-lazy-fixture==0.6.3
+pylint==2.13
+mypy==0.782
+
+--extra-index-url https://download.pytorch.org/whl/cu113
+torch==1.11
+--extra-index-url https://download.pytorch.org/whl/cu113
+torchvision==0.12
+
+ml-collections==0.1.1
+wandb==0.12.17
+
+compressai==1.2.0
