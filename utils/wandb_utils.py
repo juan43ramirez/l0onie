@@ -1,5 +1,8 @@
 import os
 from typing import List, Optional, Tuple
+import random
+import string
+import pdb
 
 import numpy as np
 import torch
@@ -161,13 +164,18 @@ def get_baseline_model(entity, project, filters, image_id, device):
 
     for one_run in runs:
 
+        rand_folder = ''.join(random.choice(string.ascii_lowercase) for i in range(5))
+
         # Get best compressed model in terms of psnr
-        filename = "models/best_model.pt"
-        one_run.file(filename).download(replace=True)
+        wandb_file_name = "models/best_model.pt"
+        local_file_name= f"models/{rand_folder}/models/best_model.pt"
+        one_run.file(wandb_file_name).download(root=f"./models/{rand_folder}", replace=True)
+
+        pdb.set_trace()
 
         # We rename in order to keep a baseline for each image in models/
-        new_name = "models/best_model_img" + str(image_id) + ".pt"
-        os.rename(filename, new_name)
+        new_name = f"models/{rand_folder}/models/best_model_img" + str(image_id) + ".pt"
+        os.rename(local_file_name, new_name)
 
         model = torch.load(new_name, map_location=device)
 
