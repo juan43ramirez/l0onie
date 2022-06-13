@@ -56,7 +56,11 @@ def prepare_keep_ratio(config, image):
         )
 
         found_tdst, achieved_bpp, return_flag = coin_utils.tdst_from_bpp(
-            config.train.target_bpp, dummy_model, config.compression.dtype, image.shape
+            config.train.target_bpp,
+            dummy_model,
+            config.compression.dtype,
+            image.shape,
+            is_magnitude_pruning=True,
         )
         assert return_flag == "converged"
 
@@ -103,7 +107,9 @@ def prepare_model(
         gated_model = gated_model.to(device, train_dtype)
 
         # Magnitude prune the model layer by layer with unstructured sparsity
-        mp.unstructured_layerwise_prune_model(gated_model, keep_ratio)
+        mp.unstructured_layerwise_prune_model(
+            gated_model, keep_ratio, dense_outer_layers=True
+        )
 
         return gated_model
 

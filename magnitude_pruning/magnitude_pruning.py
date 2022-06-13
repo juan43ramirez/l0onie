@@ -3,7 +3,9 @@ import torch
 from .frozen_gated_modules import FrozenGatedLinear, FrozenGatedModel
 
 
-def unstructured_layerwise_prune_model(model: FrozenGatedModel, keep_ratio: float):
+def unstructured_layerwise_prune_model(
+    model: FrozenGatedModel, keep_ratio: float, dense_outer_layers: bool
+):
     """
     Magnitude prune each layer of a model given a layerwise target density.
     Returns a model with added dummy gates to freeze parameters that were
@@ -12,8 +14,13 @@ def unstructured_layerwise_prune_model(model: FrozenGatedModel, keep_ratio: floa
     assert isinstance(model, FrozenGatedModel)
 
     for layer in model.sequential:
+
         if isinstance(layer, FrozenGatedLinear):
             # Magnitude prune this layer's parameters by setting their gates to 0
+
+            out_features, in_features = layer.weight.data.shape
+            if dense_outer_layers and (in_features == 2 or out_features == 3):
+                continue
 
             # We consider weight and bias separately, each is magnitude pruned
             params_list = [layer.weight.data]

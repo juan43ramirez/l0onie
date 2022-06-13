@@ -77,14 +77,20 @@ def bpp(image_shape, model):
     return model_size_in_bits(model=model) / num_pixels
 
 
-def binarize_unstructured_gates(model, target_density):
+def binarize_unstructured_gates(model, target_density, is_magnitude_pruning=False):
 
     assert model.sparsity_type == "unstructured"
 
     for module in model.layers_dict["gated"]:
         assert isinstance(module, gated.BaseGatedLayer)
         # Iterate over all gated modules and turn off (1-target_density) of parameters
+
         if isinstance(module, gated.GatedLinear):
+            if is_magnitude_pruning and (
+                module.in_features == 2 or module.out_features == 3
+            ):
+                # Skip the first later if doing magnitude pruning!
+                continue
 
             param_tensors = [module.weight_log_alpha]
             if hasattr(module, "bias_log_alpha"):
@@ -103,7 +109,9 @@ def binarize_unstructured_gates(model, target_density):
                 param.data = tensor_mask
 
 
-def tdst_from_bpp(target_bpp, model, compress_dtype, image_shape):
+def tdst_from_bpp(
+    target_bpp, model, compress_dtype, image_shape, is_magnitude_pruning=False
+):
     if model.sparsity_type is None:
         target_density = dense_tdst_from_bpp(
             target_bpp, model, compress_dtype, image_shape
@@ -111,7 +119,11 @@ def tdst_from_bpp(target_bpp, model, compress_dtype, image_shape):
         return target_density, target_bpp, "converged"
     elif model.sparsity_type == "unstructured":
         return unstructured_tdst_from_bpp(
-            target_bpp, model, compress_dtype, image_shape
+            target_bpp,
+            model,
+            compress_dtype,
+            image_shape,
+            is_magnitude_pruning=is_magnitude_pruning,
         )
     elif model.sparsity_type == "structured":
         raise NotImplementedError
@@ -120,7 +132,12 @@ def tdst_from_bpp(target_bpp, model, compress_dtype, image_shape):
 
 
 def unstructured_tdst_from_bpp(
-    target_bpp, model, compress_dtype, image_shape, atol=1e-8
+    target_bpp,
+    model,
+    compress_dtype,
+    image_shape,
+    atol=1e-8,
+    is_magnitude_pruning=False,
 ):
 
     import scipy.optimize as spo
@@ -130,7 +147,7 @@ def unstructured_tdst_from_bpp(
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     def achieved_minus_target(target_density):
-        binarize_unstructured_gates(model, target_density)
+        binarize_unstructured_gates(model, target_density, is_magnitude_pruning)
         compressed_model, return_dtype = core_utils.compress_model(
             model, device, compress_dtype
         )
