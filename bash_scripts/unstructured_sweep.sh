@@ -4,13 +4,13 @@
 #                               TO BE CUSTOMIZED
 # -----------------------------------------------------------------------------
 # Directory containing the source code
-SRC_CODE_PATH="$HOME/github/coin"
+SRC_CODE_PATH="$HOME/github/l0onie"
 
 # Bash script with call to Python
 main_bash_script="${SRC_CODE_PATH}/bash_scripts/run_exp.sh"
 
 # SLURM options
-slurm_log_dir="$HOME/slurm_logs/coin"
+slurm_log_dir="$HOME/slurm_logs/l0onie"
 notify_email="" # Leave empty ("") for no email
 partition="long"
 
@@ -59,7 +59,7 @@ declare -a gates_lr_array=(7e-4)
 
 # The parameter of this function is the python arguments
 submit_sbatch () {
-    sbatch --job-name=coin-slurm-%j.out \
+    sbatch --job-name=l0onie-%j.out \
         --time=01:00:00 \
         --cpus-per-task 4 \
         --mem=16G \
