@@ -1,11 +1,13 @@
 import os
+from functools import partial
+from multiprocessing import Pool
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from plot_style import *
 
 
-def main(x_axis, y_metrics, y_labels, df_file, save_dir):
+def main(image_id, target_bpp, x_axis, y_metrics, y_labels, df_file, save_dir):
 
     metrics = pd.read_csv(df_file + ".csv")
     metrics["_runtime"] = metrics["_runtime"] / 60
@@ -66,6 +68,15 @@ def main(x_axis, y_metrics, y_labels, df_file, save_dir):
     plt.close()
 
 
+def aux_main(image_id, target_bpp, x_axis, y_metrics, y_labels, save_dir):
+
+    print("Image: ", str(image_id))
+    img_str, bpp_str = str(image_id).zfill(2), str(target_bpp)
+    df_file = "get_results/workshop/dataframes/bpp_" + bpp_str + "/image_" + img_str
+
+    main(image_id, target_bpp, x_axis, y_metrics, y_labels, df_file, save_dir)
+
+
 if __name__ == "__main__":
 
     # Filters
@@ -84,11 +95,14 @@ if __name__ == "__main__":
         pass
 
     image_ids = range(1, 24 + 1)
-    for image_id in image_ids:
 
-        print("Image: ", str(image_id))
-
-        img_str, bpp_str = str(image_id).zfill(2), str(target_bpp)
-        df_file = "get_results/workshop/dataframes/bpp_" + bpp_str + "/image_" + img_str
-
-        main(x_axis, y_metrics, y_labels, df_file, save_dir)
+    aux_callable = partial(
+        aux_main,
+        target_bpp=target_bpp,
+        x_axis=x_axis,
+        y_metrics=y_metrics,
+        y_labels=y_labels,
+        save_dir=save_dir,
+    )
+    with Pool(5) as p:
+        print(p.map(aux_callable, image_ids))
