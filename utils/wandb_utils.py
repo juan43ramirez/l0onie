@@ -171,8 +171,6 @@ def get_baseline_model(entity, project, filters, image_id, device):
         local_file_name= f"models/{rand_folder}/models/best_model.pt"
         one_run.file(wandb_file_name).download(root=f"./models/{rand_folder}", replace=True)
 
-        pdb.set_trace()
-
         # We rename in order to keep a baseline for each image in models/
         new_name = f"models/{rand_folder}/models/best_model_img" + str(image_id) + ".pt"
         os.rename(local_file_name, new_name)
