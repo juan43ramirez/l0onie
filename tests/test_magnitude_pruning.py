@@ -37,7 +37,7 @@ def gated_model(baseline_model):
 
 class TestMagnitudePruning:
     def test_debug(self, gated_model, keep_ratio=0.7):
-        unstructured_layerwise_prune_model(gated_model, keep_ratio)
+        unstructured_layerwise_prune_model(gated_model, keep_ratio, dense_outer_layers=False)
         for layer in gated_model.sequential:
             if isinstance(layer, FrozenGatedLinear):
                 num_active = layer.weight_gates.count_nonzero()
