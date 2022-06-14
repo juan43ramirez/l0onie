@@ -4,12 +4,12 @@ import os
 
 import cooper
 import torch
+import wandb
 from absl import app
 from absl.flags import FLAGS
 from ml_collections.config_flags import config_flags as MLC_FLAGS
 
 import gated
-import wandb
 from utils import basic_utils, cmp_utils, core_utils, wandb_utils
 
 MLC_FLAGS.DEFINE_config_file("config", default="configs/debug_task.py")

@@ -1,16 +1,16 @@
 import os
-from typing import List, Optional, Tuple
+import pdb
 import random
 import string
-import pdb
+from typing import List, Optional, Tuple
 
 import numpy as np
 import torch
+import wandb
 from cooper import LagrangianFormulation
 
 import gated
 import utils
-import wandb
 
 
 def create_wandb_subdir(subdir_name: str):
@@ -164,12 +164,14 @@ def get_baseline_model(entity, project, filters, image_id, device):
 
     for one_run in runs:
 
-        rand_folder = ''.join(random.choice(string.ascii_lowercase) for i in range(5))
+        rand_folder = "".join(random.choice(string.ascii_lowercase) for i in range(5))
 
         # Get best compressed model in terms of psnr
         wandb_file_name = "models/best_model.pt"
-        local_file_name= f"models/{rand_folder}/models/best_model.pt"
-        one_run.file(wandb_file_name).download(root=f"./models/{rand_folder}", replace=True)
+        local_file_name = f"models/{rand_folder}/models/best_model.pt"
+        one_run.file(wandb_file_name).download(
+            root=f"./models/{rand_folder}", replace=True
+        )
 
         # We rename in order to keep a baseline for each image in models/
         new_name = f"models/{rand_folder}/models/best_model_img" + str(image_id) + ".pt"

@@ -75,7 +75,6 @@ def make_filters(image_id, target_bpp, hidden_dims):
 if __name__ == "__main__":
 
     # NOTE: Ensure that figs>reconstructions>media>images exists before running.
-    
     image_ids = [2, 8, 15, 23]
 
     # ----------------- TBPP and Baseline Arch. Uncomment desired lines
@@ -93,4 +92,3 @@ if __name__ == "__main__":
         aux_main = partial(get_image, target_bpp=target_bpp, hidden_dims=hidden_dims)
         with Pool(5) as p:
             print(p.map(aux_main, image_ids))
-

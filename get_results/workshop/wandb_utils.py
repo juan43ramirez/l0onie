@@ -3,11 +3,10 @@ Extract information logged to wandb in order to plot/analyze.
 WandB help: https://docs.wandb.ai/guides/track/public-api-guide
 """
 import os
-from multiprocessing import Pool
 from functools import partial
+from multiprocessing import Pool
 
 import pandas as pd
-
 import wandb
 
 # Fix entity
