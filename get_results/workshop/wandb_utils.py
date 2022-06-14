@@ -3,6 +3,8 @@ Extract information logged to wandb in order to plot/analyze.
 WandB help: https://docs.wandb.ai/guides/track/public-api-guide
 """
 import os
+from multiprocessing import Pool
+from functools import partial
 
 import pandas as pd
 
@@ -25,7 +27,7 @@ def get_metrics(filters, metric_keys, config_keys=None, x_axis="_step"):
     Returns:
         DataFrame with metrics, config list
     """
-    api = wandb.Api(overrides={"entity": ENTITY, "project": PROJECT}, timeout=20)
+    api = wandb.Api(overrides={"entity": ENTITY, "project": PROJECT}, timeout=30)
     runs = api.runs(path=ENTITY + "/" + PROJECT, filters=filters, order="-created_at")
     print("Number of runs:", len(runs))
 
@@ -72,7 +74,7 @@ def main(image_id, final_bpp, baseline_hidden_dims, foldername):
                     },
                     {
                         "$and": [
-                            {"config.wandb.run_group": "magnitude_pruning"},
+                            {"config.wandb.run_group": "new_mp"},
                             {"config.train.target_bpp": final_bpp},
                         ]
                     },
@@ -129,13 +131,24 @@ if __name__ == "__main__":
     # final_bpp = 0.3
 
     # # 5x30 -> baseline bpp = 0.15
-    # hidden_dims = 5 * [30]
-    # final_bpp = 0.15
+    hidden_dims = 5 * [30]
+    final_bpp = 0.15
 
     # # 5x20 -> baseline bpp = 0.07
     # hidden_dims = 5 * [20]
     # final_bpp = 0.07
 
     foldername = "get_results/workshop/dataframes/bpp_" + str(final_bpp) + "/"
-    for image_id in image_ids:
-        main(image_id, final_bpp, hidden_dims, foldername)
+
+    aux_main = partial(
+        main,
+        final_bpp=final_bpp,
+        baseline_hidden_dims=hidden_dims,
+        foldername=foldername,
+    )
+
+    with Pool(5) as p:
+        print(p.map(aux_main, image_ids))
+
+    # for image_id in image_ids:
+    #     main(image_id, final_bpp, hidden_dims, foldername)
