@@ -1,6 +1,6 @@
 # l0onie
 
-This repository contains the official implementation for the paper *L0onie: Compressing COINs with L0-constraints.*
+This repository contains the official implementation for the paper *[L0onie: Compressing COINs with L0-constraints.](https://arxiv.org/abs/2207.04144)*
 
 
 This code enables the training of sparse SIREN models using constrained $L_0$
