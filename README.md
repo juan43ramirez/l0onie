@@ -6,7 +6,7 @@ This repository contains the official implementation for the paper *[L0onie: Com
 This code enables the training of sparse SIREN models using constrained $L_0$
 regularization for the task of image compression. We train models to minimize the 
 reconstruction error of an image subject to a constraint on the compression ratio, measured
-in bits-per-pixel. We implement and solve the constrained optimizationn problems using
+in bits-per-pixel. We implement and solve the constrained optimization problems using
 the [Cooper](https://github.com/cooper-org/cooper) library.
 
 **Fun fact:** Loonie is a colloquial name for the Canadian one dollar *coin*!
